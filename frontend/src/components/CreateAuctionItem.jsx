@@ -7,6 +7,7 @@ const CreateAuctionItem = () => {
 	const [description, setDescription] = useState("");
 	const [startingBid, setStartingBid] = useState("");
 	const [endDate, setEndDate] = useState("");
+	const [imageLink, setImageLink] = useState(""); // New state for image link
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
 
@@ -20,7 +21,7 @@ const CreateAuctionItem = () => {
 			try {
 				await axios.post(
 					"/api/auctions",
-					{ title, description, startingBid, endDate },
+					{ title, description, startingBid, endDate, imageLink }, // Include image link in the request
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
@@ -108,6 +109,23 @@ const CreateAuctionItem = () => {
 									value={endDate}
 									onChange={(e) => setEndDate(e.target.value)}
 									className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-300"
+									required
+								/>
+							</div>
+							<div className="mb-4">
+								<label
+									htmlFor="imageLink"
+									className="block text-lg font-medium text-gray-300 mb-1"
+								>
+									Image Link
+								</label>
+								<input
+									id="imageLink"
+									type="url" // Use 'url' type for validation
+									value={imageLink}
+									onChange={(e) => setImageLink(e.target.value)}
+									className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-300"
+									placeholder="https://example.com/image.jpg"
 									required
 								/>
 							</div>

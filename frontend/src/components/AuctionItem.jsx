@@ -155,6 +155,8 @@ function AuctionItem() {
 		<div className="max-w-4xl p-8 mx-auto mt-10 text-white bg-gray-900 rounded-lg shadow-lg">
 			<h2 className="mb-4 text-4xl font-bold">{auctionItem.title}</h2>
 			<p className="mb-4 text-lg">{auctionItem.description}</p>
+			{console.log(auctionItem)};
+			<img src={auctionItem.imageLink} alt="Description of Image" width="500" height="300"></img>
 			<p className="mb-4 text-lg">
 				Starting Bid:{" "}
 				<span className="font-semibold">
@@ -279,7 +281,7 @@ function AuctionItem() {
 					</button>
 				</div>
 			)}
-			{auctionItem.createdBy !== user.id && !isAuctionEnded && (
+			{localStorage.getItem("organiser") == "false" && auctionItem.createdBy !== user.id && !isAuctionEnded && (
 				<Link
 					to={`/auction/bid/${id}`}
 					className="items-center justify-center block px-6 py-3 mt-6 text-center text-white bg-blue-700 rounded-lg ite hover:bg-blue-800"

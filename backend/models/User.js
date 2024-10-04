@@ -18,6 +18,10 @@ const userSchema = mongoose.Schema({
 		type: Date,
 		default: new Date(new Date().getTime()),
 	},
+	organiser: {
+		type: Boolean,
+		default: false, 
+	},
 });
 
 module.exports = mongoose.model("User", userSchema);

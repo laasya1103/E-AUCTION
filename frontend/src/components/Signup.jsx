@@ -10,6 +10,7 @@ function Signup() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
+	const [isOrganiser, setIsOrganiser] = useState(false); // New state for organiser role
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
@@ -27,7 +28,13 @@ function Signup() {
 		try {
 			const res = await axios.post(
 				"/api/users/register",
-				{ username, email, password, confirmPassword },
+				{ 
+					username, 
+					email, 
+					password, 
+					confirmPassword, 
+					isOrganiser // Include organiser field in the request body
+				},
 				{ withCredentials: true }
 			);
 			if (res.status === 201) {
@@ -98,6 +105,21 @@ function Signup() {
 							required
 						/>
 					</div>
+
+					{/* Organiser checkbox */}
+					<div className="flex items-center">
+						<input
+							type="checkbox"
+							id="isOrganiser"
+							checked={isOrganiser}
+							onChange={() => setIsOrganiser(!isOrganiser)} // Toggle organiser role
+							className="mr-2"
+						/>
+						<label htmlFor="isOrganiser" className="text-white">
+							Signup as Organiser
+						</label>
+					</div>
+
 					<div className="flex items-center justify-between mt-4">
 						<p className="text-white">
 							Already have an account?{" "}

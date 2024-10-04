@@ -3,41 +3,88 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const registerUser = async (req, res) => {
-	const { username, email, password, confirmPassword } = req.body;
-
+	const { username, email, password, confirmPassword, isOrganiser } = req.body; // Add isOrganiser from the request body
+    console.log(isOrganiser)
 	try {
+		// Check if all required fields are filled
 		if (!username || !email || !password || !confirmPassword) {
 			return res.status(400).json({ message: "All fields are required" });
 		}
 
+		// Check if user already exists
 		const userExists = await User.findOne({ email });
 
 		if (userExists) {
 			return res.status(400).json({ message: "User already exists" });
 		}
 
+		// Check if passwords match
 		if (password !== confirmPassword) {
 			return res.status(400).json({ message: "Passwords do not match" });
 		}
 
+		// Hash the password before saving
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
+		// Create the new user with the role (organiser or player)
 		const user = await User.create({
 			username,
 			email,
 			password: hashedPassword,
+			organiser: isOrganiser  // if checkbox is checked, organiser is true; otherwise, false
 		});
 
+		// Respond with the created user information
 		res.status(201).json({
 			id: user._id,
 			username: user.username,
 			email: user.email,
+			organiser: user.organiser
 		});
 	} catch (error) {
+		// Handle any errors during the process
 		res.status(500).json({ message: error.message });
 	}
 };
+
+
+// const registerUser = async (req, res) => {
+// 	const { username, email, password, confirmPassword } = req.body;
+
+// 	try {
+// 		if (!username || !email || !password || !confirmPassword) {
+// 			return res.status(400).json({ message: "All fields are required" });
+// 		}
+
+// 		const userExists = await User.findOne({ email });
+
+// 		if (userExists) {
+// 			return res.status(400).json({ message: "User already exists" });
+// 		}
+
+// 		if (password !== confirmPassword) {
+// 			return res.status(400).json({ message: "Passwords do not match" });
+// 		}
+
+// 		const salt = await bcrypt.genSalt(10);
+// 		const hashedPassword = await bcrypt.hash(password, salt);
+
+// 		const user = await User.create({
+// 			username,
+// 			email,
+// 			password: hashedPassword,
+// 		});
+
+// 		res.status(201).json({
+// 			id: user._id,
+// 			username: user.username,
+// 			email: user.email,
+// 		});
+// 	} catch (error) {
+// 		res.status(500).json({ message: error.message });
+// 	}
+// };
 
 const loginUser = async (req, res) => {
 	const { email, password } = req.body;
@@ -48,6 +95,8 @@ const loginUser = async (req, res) => {
 		}
 
 		const user = await User.findOne({ email });
+		const Organiser = user.organiser ; 
+		
 
 		if (!user) {
 			return res.status(400).json({ message: "User doesn't exist" });
@@ -74,6 +123,7 @@ const loginUser = async (req, res) => {
 			id: user._id,
 			username: user.username,
 			email: user.email,
+			organiser: Organiser,
 		});
 	} catch (error) {
 		console.error(error);
@@ -118,10 +168,30 @@ const logoutUser = async (req, res) => {
 		res.status(500).json({ message: error.message });
 	}
 };
+const getRole = async (req, res) => {
+	try {
+	   // Get user ID from the query parameters (or you can pass the email in the query if you prefer)
+	   const { userId } = req.query;
+
+	   // Fetch user by ID from the database
+	   const user = await User.findById(userId).select('organiser'); // Fetch only the 'organiser' field
+
+	   if (!user) {
+		  return res.status(404).json({ message: "User not found" });
+	   }
+
+	   // Send back organiser status
+	   res.status(200).json({ organiser: user.organiser });
+	} catch (error) {
+	   // Handle errors
+	   res.status(500).json({ message: error.message });
+	}
+};
 
 module.exports = {
 	registerUser,
 	loginUser,
 	getProfile,
 	logoutUser,
+	getRole
 };

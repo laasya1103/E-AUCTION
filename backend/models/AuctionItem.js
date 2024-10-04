@@ -29,6 +29,10 @@ const auctionItemSchema = mongoose.Schema({
 		type: Date,
 		default: new Date(new Date().getTime()),
 	},
+	imageLink: {
+		type: String,
+		required: true,
+	},
 });
 
 module.exports = mongoose.model("AuctionItem", auctionItemSchema);

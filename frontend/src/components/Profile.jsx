@@ -15,8 +15,13 @@ function Profile() {
 	const [totalPagesAuctions, setTotalPagesAuctions] = useState(1);
 	const [totalPagesBids, setTotalPagesBids] = useState(1);
 	const [totalPagesWon, setTotalPagesWon] = useState(1);
+	const [isOrganiser, setIsOrganiser] = useState(false); 
 
 	useEffect(() => {
+		
+
+		
+	
 		const fetchUser = async () => {
 			const token = document.cookie
 				.split("; ")
@@ -37,7 +42,7 @@ function Profile() {
 				}
 			}
 		};
-
+    
 		const fetchAuctions = async () => {
 			const token = document.cookie
 				.split("; ")
@@ -109,11 +114,19 @@ function Profile() {
 				}
 			}
 		};
-
+        const fetchRole = async () => {
+			const value = localStorage.getItem("organiser");
+			console.log("value:",value);
+			setIsOrganiser(value);
+			console.log("io",isOrganiser)
+		}
 		fetchUser();
 		fetchAuctions();
 		fetchBids();
 		fetchWonAuctions();
+		fetchRole();
+		
+		
 	}, []);
 
 	const handlePageChange = (page, type) => {
@@ -172,18 +185,28 @@ function Profile() {
 								</span>{" "}
 								{user.email}
 							</p>
+							<p className="mb-2 text-lg">
+								<span className="font-semibold text-purple-400">
+									Role:
+								</span>{" "}
+								{isOrganiser == "true" ?"Organiser":"Participant"}
+							</p>
 						</div>
 
 						<div className="flex items-center justify-between mb-8">
 							<h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-500 to-blue-600 animate-pulse">
 								Your Auctions 🏛️
 							</h2>
-							<Link
-								to="/auction/create"
-								className="inline-block px-6 py-3 text-lg font-semibold text-white transition-all duration-300 transform rounded-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 hover:shadow-lg hover:-translate-y-1"
-							>
-								Create Auction ➕
-							</Link>
+							{ console.log("lvalue:",localStorage.getItem("organiser"))  } {localStorage.getItem("organiser") != "false" ? (
+	<Link
+		to="/auction/create"
+		className="inline-block px-6 py-3 text-lg font-semibold text-white transition-all duration-300 transform rounded-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 hover:shadow-lg hover:-translate-y-1"
+	>
+		Create Auction ➕
+	</Link>
+) : (
+	<p className="text-gray-500">You are not authorised to create an auction.</p>
+)}
 						</div>
 
 						{paginatedAuctions.length ? (

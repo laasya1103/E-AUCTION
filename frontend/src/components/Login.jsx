@@ -29,6 +29,7 @@ function Login() {
 				{ withCredentials: true }
 			);
 			if (res.status === 200) {
+				localStorage.setItem("organiser" ,res.data.organiser);
 				login();
 				navigate("/profile");
 			}
